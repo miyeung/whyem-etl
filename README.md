@@ -1,4 +1,8 @@
-# whyemetl
+# whyem-etl
+
+![Python Versions](https://img.shields.io/github/pipenv/locked/python-version/miyeung/whyem-etl)
+[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://circleci.com/gh/miyeung/whyem-etl)
+[![codecov](https://codecov.io/gh/miyeung/whyem-etl/branch/master/graph/badge.svg)](https://codecov.io/gh/miyeung/whyem-etl)
 
 ## Description
 

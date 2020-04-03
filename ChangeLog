@@ -1,4 +1,15 @@
 CHANGES
 =======
 
+* add code coverage
+* add code coverage
+* add circleci badge in readme
+* improve circleci pipeline
+* improve circleci pipeline
+* fix circleci pipeline
+* Remove workflow usage in ci
+* Fix Python docker image version ci
+* test ci
+* Add .circleci/config.yml
+* initial commit
 * Initial commit
