@@ -3,24 +3,34 @@
 ![Python Versions](https://img.shields.io/github/pipenv/locked/python-version/miyeung/whyem-etl)
 [![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://circleci.com/gh/miyeung/whyem-etl)
 [![codecov](https://codecov.io/gh/miyeung/whyem-etl/branch/master/graph/badge.svg)](https://codecov.io/gh/miyeung/whyem-etl)
+[![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## Description
 
-whyemetl project is a Python webserver that provides APIs to get
-various information about job applications across the world.
+whyem-etl is the pet project I use as a sandbox for experimentation and
+learning. Therefore should not be used in production. It consists in a Python
+webserver that provides APIs to get various information from a dataset
+containing job applications information.
 
-This project features:
+The project features a flask webserver and its Postgres database to query data
+through APIs. The dataset in use contains job positions for different
+professions and several companies across the world.
 
-- APIs exposed through a Python Flask web server
-- Dependencies management (pipenv)
-- Code quality
-  - Syntax check (flake8)
-  - Codestyle (black)
+The current APIs allows to:
+
+- Enrich the data in an ETL fashion
+- Get aggregated data.
+
+In term of toolings, the project comes with:
+
+- Application packaging (pipenv)
+- Code quality checks
+  - Linter (flake8)
+  - Formatter (black)
   - Vulnerabilities in dependencies and code (pipenv / bandit)
   - Automated unit testing (pytest)
-- Deployment
-  - Image building (Docker)
-  - Local deployment of server+postgres for integration testing (Docker-compose).
+- Local deployment using docker and docker-compose
+- Continuous Integration (CI) using CircleCI running the above code quality checks.
 
 Provided APIs are:
 
@@ -33,8 +43,6 @@ Provided APIs are:
 
 ## Getting started
 
-To run the application in local mode, follow the instructions below.
-
 ### Prerequisites
 
 This application requires installing:
@@ -45,7 +53,8 @@ This application requires installing:
 
 ### Getting Python dependencies
 
-Once the above tools installed, run the following commands. It will install Python dependencies.
+Once the above tools installed, run the following commands. It will install
+Python dependencies.
 
 ```bash
 # Init Python environment with pipenv
@@ -64,7 +73,10 @@ make docker-image
 make compose-up
 ```
 
-It will create a docker image for the Python webserver and pulls a Postgres database image. Once generated and downloaded, they will be run as containers within a virtual network, and connected altogether. Mocked data located in `./data/dump.sql` will automatically be loaded in database.
+It will create a docker image for the Python webserver and pulls a Postgres
+database image. Once generated and downloaded, they will be run as containers
+within a virtual network, and connected altogether. Mocked data located in
+`./data/dump.sql` will automatically be loaded in the database.
 
 ### Check connectivity with webserver
 
@@ -79,7 +91,7 @@ curl http://127.0.0.1:5000/
 curl http://127.0.0.1:5000/checkDbConnection
 ```
 
-Response should be the first row in database:
+The response should be the first row in database:
 
 ```json
 {
@@ -95,21 +107,27 @@ Response should be the first row in database:
 
 ### Add continent information to data
 
-In the original data, the continent information is not provided. To tackle this issue, a `office_continent` column has been added to the table and the `/consolidateData` implemented.
+In the original data, the continent information is not provided. To tackle this
+issue, an `office_continent` column has been added to the table and the
+`/consolidateData` implemented.
 
-`/consolidateData` works in an ETL fashion: it extracts the data from database, transforms it by adding the continent information and loads it back. It can takes a few minutes to be run.
+`/consolidateData` works in an ETL fashion: it extracts the data from a
+database, transforms it by adding the continent information and loads it back.
+It can takes a few minutes to be run.
 
 ```bash
 curl http://127.0.0.1:5000/consolidateData
 ```
 
-This API is yet to be improved on how continent information is derived given (latitude, longitude). As of today, the API:
+This API is yet to be improved on how continent information is derived given
+(latitude, longitude). As of today, the API:
 
 - add continent labels for `EUROPE`, `ASIA` and `AMERICA`
 - for rows that could not be labeled, `OTHERS` is added
 - has a success rate of 98.23% (475 rows with `OTHERS` among 26873 total rows).
 
-For data quality evaluation and future improvements, the API response contains the success rate and the failed rows references. See example below:
+For data quality evaluation and future improvements, the API response contains
+the success rate and the failed rows references. See example below:
 
 ```json
 {
@@ -130,7 +148,9 @@ For data quality evaluation and future improvements, the API response contains t
 
 ### Get jobs information by continent
 
-To get the total number of job offers aggregated by continent for a given list of profession, we use the `/jobsByContinent` API. See below example usage for profession_id 12 and 15.
+To get the total number of job offers aggregated by continent for a given list
+of professions, we use the `/jobsByContinent` API. See below example usage for
+profession_id 12 and 15.
 
 ```bash
 # Getting information for profession_id = 12 and 15
@@ -151,13 +171,16 @@ See below the response.
 }
 ```
 
-Note that the API provides also provides the number of job offers on unidentified continents.
+Note that the API provides also provides the number of job offers on
+unidentified continents.
 
-## Project tooling
-
-### Code quality
+## Tooling
 
 ```bash
+# ---------------------------------------------------------------------
+# Application building
+# ---------------------------------------------------------------------
+
 # Set up pipenv project, dependencies and install pre-commit
 make init
 
@@ -175,13 +198,11 @@ make bandit
 
 # Run Python tests
 make test
-```
 
-In addition to these commands, note that with pre-commit tool, every time a new code is committed, several code quality checks are automatically run against the committed code.
+# ---------------------------------------------------------------------
+# Local deployment and basic monitoring
+# ---------------------------------------------------------------------
 
-### Docker
-
-```bash
 # Build docker image
 make docker-image
 
@@ -205,19 +226,63 @@ make compose-stop
 make compose-down
 ```
 
-## Design: Getting Continent information
+## Case study: Getting relevant information from open job positions data
 
-Because the main `/jobsByContinent` relies on the Continent information, it needed to be added in some way.
+### Dataset description
 
-The first idea that came up was to integrate PostGIS plugin that comes up with multiple geospatial features on top of Postgres. While this idea sounded promising, I was unsure the Continent column could be added easily. A Continent can represented by a list of positions that would form a polygon. This representation raised several questions such as `how many points to take?` and `where to get such data`? Because both of these questions are non-trivial and more generally GIS is complex, I decided to change the approach. Moreover, using PostGIS may not be integrated when using public Cloud database service (?).
+The dataset used here is stored under `data/dump.sql` that is an extract of a
+Postgres database. The dump is automatically loaded when running both server and
+database with docker-compose.
 
-Second approach was to construct the Continent information dynamically for each and every API call. While easier, I needed to find a way to get such information given (latitude, longitude). Such information could be retrieved from the rich Google Geolocation API. The downsides to this solutions is that it would add a high-adherence to an external service on which we do not have control and is costly.
+There are 2 tables:
 
-Both of these solutions seemed over-engineering and came with too many downside. Based on the assumption that job offices are very likely to be in large capital cities, the final approach that was implemented is a mix of static/dynamic information transformation:
+- `jobs` that contains all the open job positions information. They comes from
+  different companies. It is the fact table.
+- `professions` that contains a list of professions that are associated to an
+  open job positions. It is a dimension table.
+
+From an analytics perspective, it is relevant to get statistics on the data such
+as the distribution of professions by jobs or the repartition of number of open
+positions by continent. As of today, the developped APIs focus on the latter use
+case.
+
+### Design considerations to get the number of jobs by continent
+
+The data contains position information (latitude, longitude) of the offices
+related to the open positions. Because the main `/jobsByContinent` relies on the
+Continent information, it needed to be added in some way.
+
+The first idea that came up was to integrate the PostGIS plugin that comes up
+with multiple geospatial features on top of Postgres. While this idea sounded
+promising, I was unsure the Continent column could be added easily. A Continent
+can represented by a list of positions that would form a polygon. This
+representation raised several questions such as:
+
+- `how many points to take?`
+- `who define what are the continent delimitations?`
+- `where to get such data?`
+
+Because both of these questions are non-trivial and more generally GIS is
+complex, I decided not to take this approach. Moreover, in the future I might
+want to deploy in a Cloud platform. Not all of their services contain an
+out-of-the-box integration with PostGIS.
+
+The second approach was to construct the Continent information dynamically for
+every API call. While easier, I needed to find a way to get such information
+given (latitude, longitude). Such information could be retrieved from the rich
+Google Geolocation API. The downsides to this solution is that it would add a
+high-adherence to an external service on which we do not have control and is
+costly.
+
+Both of these solutions seemed over-engineered and came with too many
+drawbacks. Based on the assumption that job offices are very likely to be in
+large capital cities, the final approach that was implemented is a mix of
+static/dynamic information transformation:
 
 - Approximate continents by Rectangle shapes roughly surrounding them
 - Develop internal APIs to process the Continent information
-- Add the information on existing information when starting the db (static transformations)
+- Add the information on existing information when starting the db (static
+  transformations)
 - Add the information dynamically when putting new data (not implemented).
 
 See illustration below:
@@ -227,15 +292,21 @@ See illustration below:
 This far more easier solution has good results:
 
 - Only a few minutes is needed to process the data at rest when starting the database
-- Most of the processing is done on database side
-- Developers can use SQL-like (filter, group by...) to get the right information instead of doing ad-hoc transformations in Python
+- Most of the processing is done on the database side
+- Developers can use SQL-like (filter, group by...) to get the right information
+  instead of doing ad-hoc transformations in Python
 - Total control on the transformation code
 - Ease of maintenance using interfaces.
 
-The major downside to this approach is the data quality issue. Considering continents as rectangles (that can not be pivoted) is raw approximation: the rectangles will never match the boundaries of continents.
+The major downside to this approach is the data quality issue. Considering
+continents as rectangles (that can not be pivoted) is a raw approximation: the
+rectangles will never match the boundaries of continents.
 
-By adding the success_rate, it helped be to know if many rows were not labeled or not. However it does not solve the issue of low quality rectangle approximation. To improve the data quality, I would favor an iterative approach:
+By adding the success_rate, it helped be to know if many rows were not labeled
+or not. However, it does not solve the issue of low-quality rectangle
+approximation. To improve the data quality, I would favor an iterative approach:
 
-- Visualize a scatter-plotting of positions using Jupyter and Matplolib to check the rectangles
+- Visualize a scatter-plotting of positions using Jupyter and Matplolib to check
+  the rectangles
 - Refine the rectangles positions and size.
 - When rectangles is not precise enough, it might be interesting to try another shape.
