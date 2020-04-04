@@ -12,10 +12,6 @@ learning. Therefore should not be used in production. It consists in a Python
 webserver that provides APIs to get various information from a dataset
 containing job applications information.
 
-The project features a flask webserver and its Postgres database to query data
-through APIs. The dataset in use contains job positions for different
-professions and several companies across the world.
-
 The current APIs allows to:
 
 - Enrich the data in an ETL fashion
