@@ -172,11 +172,9 @@ unidentified continents.
 
 ## Tooling
 
-```bash
-# ---------------------------------------------------------------------
-# Application building
-# ---------------------------------------------------------------------
+### Python application
 
+```bash
 # Set up pipenv project, dependencies and install pre-commit
 make init
 
@@ -194,11 +192,11 @@ make bandit
 
 # Run Python tests
 make test
+```
 
-# ---------------------------------------------------------------------
-# Local deployment and basic monitoring
-# ---------------------------------------------------------------------
+### Docker deployment
 
+```bash
 # Build docker image
 make docker-image
 
@@ -221,6 +219,22 @@ make compose-stop
 # Run off docker-compose containers
 make compose-down
 ```
+
+### Data visualization
+
+Metabase is run as part of the docker-compose deployment. Once you have run
+`make compose-up`, Metabase server is available at `http://127.0.0.1:3000/`.
+
+To use Metabase, you will to register yourself and indicate which database to
+connect to:
+
+- database: `db`
+- database name: `postgres`
+- database username: `postgres`
+- database user password: `postgres`.
+
+Once everything is set up, you should be able to navigate through Postgres data
+by clicking on `Browse data`.
 
 ## Case study: Getting relevant information from open job positions data
 

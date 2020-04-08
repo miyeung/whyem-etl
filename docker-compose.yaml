@@ -21,3 +21,8 @@ services:
       - "./data/dump.sql:/docker-entrypoint-initdb.d/init.sql"
     environment:
       POSTGRES_PASSWORD: postgres
+  metabase:
+    image: metabase/metabase:v0.35.1
+    container_name: whyemetl_metabase
+    ports:
+      - "3000:3000"
