@@ -3,7 +3,6 @@ CONTAINER_NAME := whyemetl_server
 TAG := latest
 
 init:
-	pip install pipenv --upgrade --user
 	pipenv install --dev
 	pipenv run pre-commit install
 

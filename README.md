@@ -9,7 +9,7 @@
 
 whyem-etl is the pet project I use as a sandbox for experimentation and
 learning. Therefore should not be used in production. It consists in a Python
-webserver that provides APIs to get various information from a dataset
+web application that provides APIs to get various information from a dataset
 containing job applications information.
 
 The current APIs allows to:
@@ -41,47 +41,101 @@ Provided APIs are:
 
 ### Prerequisites
 
-This application requires installing:
+This application requires:
 
 - Python 3.7
-- Docker
-- Docker-compose
+- Docker 19.03.1 or higher
+- Docker-compose 1.241 or higher
 
-### Getting Python dependencies
+#### Python
+
+```bash
+# Check your current Python version
+python --version # should be 3.7
+
+# Update repo list
+sudo apt-get update
+
+# Add Deadsnake repo
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+
+# Install Python 3.7
+sudo apt-get install python3.7
+
+# Check version
+python --version # should be 3.7
+
+# Install pip3
+sudo apt-get install python3-pip
+```
+
+The project uses `pipenv` to handle Python packaging. We will need to install it
+using pip.
+
+```bash
+# Check that you use pip3
+pip --version # should use Python 3.7
+
+# If not, change default pip to use pip3
+ln -s /home/$USER/.local/bin/pip3 /home/$USER/.local/bin/pip
+
+# Check that you now use pip3
+pip --version # Should use Python 3.7
+
+# Install pipenv
+pip install pipenv --upgrade --user
+
+# Check pipenv installation
+pipenv --version # pipenv, version 2018.11.26
+```
+
+#### Docker and Compose
+
+Follow instructions from official docs `https://docs.docker.com/engine/install/`
+and `https://docs.docker.com/compose/install/`. Pay special attention to the
+version your download for Compose. The current docker-compose.yml file is not
+compatible with all Compose version.
+
+You will also need to be run Docker with non-root access:
+`https://docs.docker.com/engine/install/linux-postinstall/`.
+
+### Installing project dependencies
 
 Once the above tools installed, run the following commands. It will install
-Python dependencies.
+Python dependencies using pipenv.
 
 ```bash
 # Init Python environment with pipenv
 make init
 ```
 
-### Run webserver and database
+### Run web application and database
 
-To run the webserver and its Postgres database, run the following:
+To run the web application and its Postgres database, run the following:
 
 ```bash
 # Build docker image
 make docker-image
 
-# Run webserver and its database with docker-compose
+# Run web application and its database with docker-compose
 make compose-up
 ```
 
-It will create a docker image for the Python webserver and pulls a Postgres
+It will create a docker image for the Python web application and pulls a Postgres
 database image. Once generated and downloaded, they will be run as containers
 within a virtual network, and connected altogether. Mocked data located in
 `./data/dump.sql` will automatically be loaded in the database.
 
-### Check connectivity with webserver
+### Check connectivity with web application
 
 ```bash
 curl http://127.0.0.1:5000/
 # Hello, World!
 ```
 
-### Check webserver connectivity with database
+### Check web application connectivity with database
 
 ```bash
 curl http://127.0.0.1:5000/checkDbConnection
@@ -200,10 +254,10 @@ make test
 # Build docker image
 make docker-image
 
-# Run webserver and postgres db with docker-compose
+# Run web application and postgres db with docker-compose
 make compose-up
 
-# Check webserver logs
+# Check web application logs
 docker logs whyemetl_server
 
 # Check db logs
