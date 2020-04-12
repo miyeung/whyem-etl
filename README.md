@@ -274,6 +274,58 @@ make compose-stop
 make compose-down
 ```
 
+### SQL transformations
+
+Dbt (Data Build Tools) is used to create in-database successive SQL data
+transformations in an ELT (Extract Load Transform) fashion.
+
+Dbt is automatically installed when installed the project with `make init`. To
+use it, you have to manually set up your `profiles.yml` file.
+
+```bash
+touch ~/.dbt/profiles.yml
+```
+
+Edit the file and paste the below content:
+
+```yaml
+# For more information on how to configure this file, please see:
+# https://docs.getdbt.com/docs/profile
+
+default:
+  outputs:
+    dev:
+      type: postgres
+      threads: 1
+      host: 127.0.0.1
+      port: 5432
+      user: postgres
+      pass: postgres
+      dbname: postgres
+      schema: dbt_whyemetl
+  target: dev
+```
+
+Default password has been left as it is to make demo easy but you should change
+it.
+
+Make sure the database is running `make compose-up`. Then check dbt connectivity
+to database by running `make dbt-check-config`. If there are no errors, you can
+now compute the transformations by running `make dbt-run`. By doing so, dbt will
+create all the tables/views defined in `dbt/models` directory.
+
+You can run dbt tests against the computed data by running `make dbt-test`. It
+runs various consistency tests the tables/views. Note that if the HTTP
+`consolidateData` has not been called before, the test with `Continent` data
+will (as it has not been generated).
+
+Full documentation can be generated and displayed by running `make dbt-docs`. It
+will generated a `catalog.json` documentation file and load it into a local
+webserver on `127.0.0.1:3000/` accessible through your web browser.
+
+Everything is all set and the computed data are now visible on Metabase for
+visualization (heck below section).
+
 ### Data visualization
 
 Metabase is run as part of the docker-compose deployment. Once you have run

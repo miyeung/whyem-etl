@@ -4,6 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+v = {editable = true,version = "*"}
 
 [packages]
 Flask = "==1.1.1"
@@ -20,6 +21,7 @@ pytest-cov = "==2.8.1"
 codecov = "==2.0.22"
 isort = "==4.3.21"
 pytest-flask = "==1.0.0"
+dbt = "==0.16.0"
 
 [requires]
 python_version = "3.7"

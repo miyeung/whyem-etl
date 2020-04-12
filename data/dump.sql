@@ -20,6 +20,14 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Setting up custom schema for dbt transformations
+--
+CREATE SCHEMA dbt_whyemetl;
+grant all privileges on schema dbt_whyemetl to postgres;
+
+
+
+--
 -- Name: jobs; Type: TABLE; Schema: public;
 --
 

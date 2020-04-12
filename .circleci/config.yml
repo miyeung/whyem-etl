@@ -20,10 +20,15 @@ jobs: # A basic unit of work in a run
           name: Check code style
           command: |
             pipenv run black --check .
-      - run:
-          name: Check dependencies graph
-          command: |
-            pipenv check
+
+      # There is an issue with pipenv check that uses pyup.io service
+      # The error is "invalid api key error"
+      # Check https://github.com/pypa/pipenv/issues/4188
+
+      # - run:
+      #     name: Check dependencies graph
+      #     command: |
+      #       pipenv check
       - run:
           name: Run tests
           command: |
