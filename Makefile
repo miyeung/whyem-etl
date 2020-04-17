@@ -13,6 +13,8 @@ init:
 	$(info *****  Installing git precommit hooks *****)
 	pipenv run pre-commit install
 
+.PHONY: init
+
 # -----------------------------------------
 # Python code quality tooling
 # -----------------------------------------
@@ -38,12 +40,18 @@ isort:
 	pipenv run isort -rc .
 
 # Unit tests
-test:
-	pipenv run pytest --disable-pytest-warnings -v .
+tests:
+	pipenv run pytest --disable-pytest-warnings -v --cov-report=xml --cov=whyemetl .
+
+# Code coverage
+tests-cov:
+	pipenv run codecov
 
 # Typing check
 mypy:
 	pipenv run mypy whyemetl/ --ignore-missing-imports --pretty
+
+.PHONY: flake8 black check-deps bandit isort tests tests-cov mypy
 
 # -----------------------------------------
 # Application and docker packaging
@@ -75,6 +83,7 @@ clean:
 	rm -rf build/
 	rm -rf *.egg-info/
 
+.PHONY: build-package docker-image clean
 # -----------------------------------------
 # Running application
 # -----------------------------------------
@@ -92,6 +101,7 @@ compose-stop:
 compose-down:
 	docker-compose -f docker-compose.yaml down
 
+.PHONY: docker-run compose-up compose-stop compose-down
 # -----------------------------------------
 # Running SQL transformations in dbt/ (database has to be up)
 # -----------------------------------------
@@ -108,7 +118,7 @@ dbt-run: dbt-check-config
 	pipenv run dbt run
 
 # Run dbt SQL tests against data pipelines in database
-dbt-test: dbt-check-config
+dbt-tests: dbt-check-config
 	$(info ***** Running dbt tests against db *****)
 	cd dbt; \
 	pipenv run dbt test
@@ -120,3 +130,5 @@ dbt-docs: dbt-check-config
 	cd dbt; \
 	pipenv run dbt docs generate; \
 	pipenv run dbt docs serve
+
+.PHONY: dbt-check-config dbt-run dbt-tests dbt-docs

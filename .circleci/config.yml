@@ -11,11 +11,11 @@ jobs: # A basic unit of work in a run
           name: Install deps
           command: |
             sudo pip install pipenv
-            pipenv install --dev
+            make init
       - run:
           name: Check code syntax
           command: |
-            pipenv run flake8 .
+            make flake8
       - run:
           name: Check typing
           command: |
@@ -23,7 +23,7 @@ jobs: # A basic unit of work in a run
       - run:
           name: Check code style
           command: |
-            pipenv run black --check .
+            make black
 
       # There is an issue with pipenv check that uses pyup.io service
       # The error is "invalid api key error"
@@ -36,8 +36,8 @@ jobs: # A basic unit of work in a run
       - run:
           name: Run tests
           command: |
-            pipenv run pytest --disable-pytest-warnings -v --cov-report=xml --cov=whyemetl .
+            make tests
       - run:
           name: Run code coverage
           command: |
-            pipenv run codecov
+            make tests-cov
