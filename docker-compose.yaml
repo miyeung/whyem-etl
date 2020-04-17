@@ -11,6 +11,8 @@ services:
       PGDATABASE: postgres
       PGUSER: postgres
       PGPASSWORD: postgres
+    depends_on:
+      - db
   db:
     image: postgres:9.6
     container_name: whyemetl_db
@@ -26,3 +28,6 @@ services:
     container_name: whyemetl_metabase
     ports:
       - "3000:3000"
+    depends_on:
+      - db
+      - server

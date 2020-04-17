@@ -52,7 +52,7 @@ mypy:
 # Install all dependencies, generate a lock file and generated a wheel distribution
 build-package: clean
 	$(info *****  Installing Python dependencies *****)
-	pipenv install --dev
+	pipenv install
 	$(info *****  Locking dependencies and export to a requirements.txt file *****)
 	pipenv lock --requirements > requirements.txt
 	$(info *****  Generating wheel dist file *****)

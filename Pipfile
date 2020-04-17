@@ -5,17 +5,10 @@ verify_ssl = true
 
 [dev-packages]
 v = {editable = true,version = "*"}
-
-[packages]
-Flask = "==1.1.1"
 flake8 = "==3.7.9"
+flake8-colors = "*"
 black = "==19.10b0"
 bandit = "==1.6.2"
-flake8-colors = "*"
-pre-commit = "==v1.20.0"
-flask-sqlalchemy = "==2.4.1"
-psycopg2 = "==2.7.7"
-pbr = "*"
 pytest = "==5.4.1"
 pytest-cov = "==2.8.1"
 codecov = "==2.0.22"
@@ -23,6 +16,13 @@ isort = "==4.3.21"
 pytest-flask = "==1.0.0"
 dbt = "==0.16.0"
 mypy = "==v0.770"
+
+[packages]
+pbr = "*"
+Flask = "==1.1.1"
+flask-sqlalchemy = "==2.4.1"
+pre-commit = "==v1.20.0"
+psycopg2 = "==2.7.7"
 
 [requires]
 python_version = "3.7"
