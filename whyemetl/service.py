@@ -3,29 +3,30 @@ Contains business logic interfaces.
 """
 
 from abc import ABC, abstractmethod
+from typing import List
 
-from whyemetl import america, asia, europe, log
+from whyemetl import america, asia, europe, log, repository
 from whyemetl.location import Position, get_continent
 
 
 class WhyemetlService(ABC):
     """ Main business logic interfaces matching web APIs. """
 
-    def __init__(self, repository):
+    def __init__(self, repository: repository.JobsRepository) -> None:
         self.repository = repository
 
     @abstractmethod
-    def check_db_ctx(self):
+    def check_db_ctx(self) -> dict:
         """ Check connectivity with database. """
         pass
 
     @abstractmethod
-    def consolidate_data(self):
+    def consolidate_data(self) -> dict:
         """ Consolidates Jobs data by adding Continent information. """
         pass
 
     @abstractmethod
-    def get_jobs_by_continent(self):
+    def get_jobs_by_continent(self, profession_ids: List[int]) -> dict:
         """
         Returns the aggregated jobs information by continent given
         the profession_ids.
@@ -36,10 +37,10 @@ class WhyemetlService(ABC):
 class WhyemetlDemoService(WhyemetlService):
     """ Demo implementation of WhyemetlService interface. """
 
-    def __init__(self, repository):
+    def __init__(self, repository: repository.SQLJobsRepository) -> None:
         super().__init__(repository)
 
-    def check_db_ctx(self):
+    def check_db_ctx(self) -> dict:
         job = self.repository.get_first_job()
 
         return {
@@ -52,7 +53,7 @@ class WhyemetlDemoService(WhyemetlService):
             "candidates": job.candidates,
         }
 
-    def consolidate_data(self):
+    def consolidate_data(self) -> dict:
         count = self.repository.get_jobs_count()
         jobs = self.repository.get_jobs()
 
@@ -87,7 +88,7 @@ class WhyemetlDemoService(WhyemetlService):
             "failed_rows": outlier_references,
         }
 
-    def get_jobs_by_continent(self, profession_ids):
+    def get_jobs_by_continent(self, profession_ids: List[int]) -> dict:
         results = self.repository.get_jobs_by_continent(profession_ids)
         if not results:
             raise Exception

@@ -17,6 +17,10 @@ jobs: # A basic unit of work in a run
           command: |
             pipenv run flake8 .
       - run:
+          name: Check typing
+          command: |
+            make mypy
+      - run:
           name: Check code style
           command: |
             pipenv run black --check .

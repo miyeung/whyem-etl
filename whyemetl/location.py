@@ -4,6 +4,7 @@ Location contains utility classes to represents geopositions and continents.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import List
 
 
 @dataclass
@@ -15,8 +16,11 @@ class Position:
 class Continent(ABC):
     """ Continent interface that represents a geographical Continent area. """
 
+    def __init__(self, name: str) -> None:
+        self.name = name
+
     @abstractmethod
-    def contains(self, position):
+    def contains(self, position: Position) -> bool:
         """ Returns True if the given position is in the Continent area. """
         pass
 
@@ -25,12 +29,12 @@ class Rectangle(Continent):
     """A Continent area is approximated by a rectangle, defined by 2 positions:
     upperleft and bottomright"""
 
-    def __init__(self, name, upperleft, bottomright):
-        self.name = name
+    def __init__(self, name: str, upperleft: Position, bottomright: Position) -> None:
+        super().__init__(name)
         self.upperleft = upperleft
         self.bottomright = bottomright
 
-    def contains(self, position):
+    def contains(self, position: Position) -> bool:
         """ Returns True if the given position is within the Continent. """
 
         if position.latitude is None or position.longitude is None:
@@ -46,7 +50,7 @@ class Rectangle(Continent):
         return False
 
 
-def get_continent(position, continents):
+def get_continent(position: Position, continents: List[Continent]) -> str:
     """
     Checks in which continent the position is.
     Returns the continent name that contains it.

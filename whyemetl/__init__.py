@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from whyemetl.location import Position, Rectangle
 
 
-def get_logger():
+def get_logger() -> logging.Logger:
     """ Returns a well formatted logger with INFO level streaming out to stdout. """
 
     fmt = logging.Formatter(
@@ -38,7 +38,7 @@ db = SQLAlchemy()
 #
 
 
-def create_app():
+def create_app() -> Flask:
     """ Returns a Flask application with database ORM and blueprint initialized. """
 
     from . import views
@@ -49,7 +49,7 @@ def create_app():
     return app
 
 
-def db_url():
+def db_url() -> str:
     """ Returns database URL for Postgres with docker-compose integration. """
 
     db_host = os.environ["PGHOST"]

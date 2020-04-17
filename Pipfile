@@ -22,6 +22,7 @@ codecov = "==2.0.22"
 isort = "==4.3.21"
 pytest-flask = "==1.0.0"
 dbt = "==0.16.0"
+mypy = "==v0.770"
 
 [requires]
 python_version = "3.7"

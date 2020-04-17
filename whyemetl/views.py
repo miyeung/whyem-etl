@@ -2,6 +2,8 @@
 Contains web API routes logic.
 """
 
+from typing import List
+
 from flask import Blueprint, abort, request
 
 from whyemetl import db, log
@@ -12,24 +14,24 @@ bp = Blueprint("/", __name__)
 
 
 @bp.route("/")
-def hello():
+def hello() -> str:
     return f"Hello, World!"
 
 
 @bp.route("/checkDbConnection")
-def check_db_ctx():
+def check_db_ctx() -> dict:
     service = WhyemetlDemoService(SQLJobsRepository(db))
     return service.check_db_ctx()
 
 
 @bp.route("/consolidateData")
-def consolidate_data():
+def consolidate_data() -> dict:
     service = WhyemetlDemoService(SQLJobsRepository(db))
     return service.consolidate_data()
 
 
 @bp.route("/jobsByContinent", methods=["POST"])
-def get_jobs_by_continent():
+def get_jobs_by_continent() -> dict:
     profession_ids = request.json.get("profession_ids")
     if malformed_body(profession_ids):
         log.info(f"Request body is malformed: {profession_ids}, returning 400 error")
@@ -42,7 +44,7 @@ def get_jobs_by_continent():
         abort(404)
 
 
-def malformed_body(body):
+def malformed_body(body: List[int]) -> bool:
     if body is None:
         return True
     if not body:

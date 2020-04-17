@@ -41,6 +41,10 @@ isort:
 test:
 	pipenv run pytest --disable-pytest-warnings -v .
 
+# Typing check
+mypy:
+	pipenv run mypy whyemetl/ --ignore-missing-imports --pretty
+
 # -----------------------------------------
 # Application and docker packaging
 # -----------------------------------------
@@ -57,7 +61,8 @@ build-package: clean
 # Generate Python wheel dist and build the docker image containing the Python web app
 docker-image:
 	$(info ***** Building Python package  *****)
-	#docker rmi $(IMAGE_NAME):$(TAG)
+	#docker rmi $(IMAGE_NAME):$(TAG) # TODO: do not crash if no images when
+	#trying to delete it
 	$(MAKE) build-package
 	$(info *****  Building docker image*****)
 	docker build --rm -t $(IMAGE_NAME):$(TAG) .
